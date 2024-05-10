@@ -1,0 +1,24 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- task: NuGetToolInstaller@1
+
+- task: NuGetCommand@2
+  inputs:
+    restoreSolution: 'CmsWebApi.sln'
+
+- task: VSBuild@1
+  inputs:
+    solution: 'CmsWebApi.sln'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true'
+    platform: 'Any CPU'
+    configuration: 'Release'
+
+- task: VSTest@2
+  inputs:
+    platform: 'Any CPU'
+    configuration: 'Release'
