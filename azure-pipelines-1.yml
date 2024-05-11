@@ -8,18 +8,8 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  azureSubscription: 'YourAzureSubscriptionName'
-  containerRegistry: 'YourACRName.azurecr.io'
-  imageName: 'cmswebapi'
-  imageTag: '$(Build.BuildId)'
-  appServiceName: 'YourAppServiceName'
-  resourceGroupName: 'YourResourceGroupName'
-  region: 'YourAzureRegion'
-  clientId: $(CmsWebApiSecrets.clientId)
-  tenantId: $(CmsWebApiSecrets.tenantId)
-  secretId: $(CmsWebApiSecrets.secretId)
-  subscriptionId: $(CmsWebApiSecrets.subscriptionId)
-
+  
+  
 stages:
 - stage: Build
   displayName: 'Build .NET Application'
@@ -38,47 +28,5 @@ stages:
         projects: '$(solution)'
         arguments: '--configuration $(buildConfiguration)'
 
-- stage: Deploy
-  displayName: 'Deploy to Azure App Service'
-  dependsOn: Build
-  jobs:
-  - deployment: DeployWeb
-    displayName: 'Deploy Web App'
-    environment: 'YourAppServiceEnvironmentName'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - task: Docker@2
-            inputs:
-              command: 'build'
-              azureSubscriptionEndpoint: '$(azureSubscription)'
-              azureContainerRegistry: '$(containerRegistry)'
-              dockerFile: '$(Build.SourcesDirectory)/Dockerfile'
-              imageName: '$(containerRegistry)/$(imageName)'
-              includeLatestTag: true
-              tags: |
-                $(imageTag)
-                
-          - task: Docker@2
-            inputs:
-              command: 'push'
-              azureSubscriptionEndpoint: '$(azureSubscription)'
-              azureContainerRegistry: '$(containerRegistry)'
-              imageName: '$(containerRegistry)/$(imageName)'
-              includeLatestTag: true
-              tags: |
-                $(imageTag)
-                
-          - task: AzureWebAppContainer@1
-            displayName: 'Azure Web App on Container Deploy'
-            inputs:
-              azureSubscription: $(clientId)
-              tenantId: $(tenantId)
-              appId: $(appId)
-              appSecret: $(secretId)
-              appName: '$(appServiceName)'
-              containers: '$(containerRegistry)/$(imageName):$(imageTag)'
-              resourceGroupName: '$(resourceGroupName)'
-              regionName: '$(region)'
-              enableCustomDeployment: true
+
+      
