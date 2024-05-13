@@ -1,0 +1,23 @@
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+  dockerImageName: 'lokeshreddy12321/CmsWebApi'
+  dockerFile: '**/Dockerfile'  # Adjusted to point to the Dockerfile location relative to the .sln file
+
+steps:
+
+
+
+
+- task: Docker@2
+  inputs:
+    repository: '$(dockerImageName)'
+    dockerfile: '$(dockerFile)'
+    buildContext: '.'
+    tags: |
+      $(Build.BuildNumber)
+
